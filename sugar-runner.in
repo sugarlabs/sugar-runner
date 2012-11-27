@@ -1,0 +1,33 @@
+#!/bin/bash
+
+helpersdir=@helpersdir@
+display=`$helpersdir/find-free-display`
+
+if [ ! -z $DISPLAY ]; then
+    SUGAR_EMULATOR_XKBCONFIG=`mktemp -t sugar-xkbconfig-XXXXXX`
+    setxkbmap -print > $SUGAR_EMULATOR_XKBCONFIG
+    export SUGAR_EMULATOR_XKBCONFIG
+fi
+
+if [ -z $DISPLAY ]; then
+    tty_num=`tty | grep -oE '[0-9]+$'`
+
+    xinit $helpersdir/xinitrc -- $display vt$tty_num
+else
+    screen_dpi=`$helpersdir/get-screen-dpi`
+    xephyr_options="-dpi $screen_dpi"
+
+    xidfile=`mktemp -t sugar-xephyr-xid-XXXXXX`
+    $helpersdir/xephyr-window $RESOLUTION > $xidfile &
+    xephyrwindowpid=$!
+
+    while [ ! -s $xidfile ]
+    do
+        sleep 1
+    done
+
+    xephyr_options="$xephyr_options -parent `cat $xidfile`"
+    xinit $helpersdir/xinitrc -- /usr/bin/Xephyr $display $xephyr_options
+
+    kill $xephyrwindowpid
+fi

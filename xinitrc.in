@@ -1,0 +1,33 @@
+#!/bin/bash
+
+helpersdir=@helpersdir@
+
+unset GPG_AGENT_INFO
+unset SSH_AUTH_SOCK
+unset GNOME_KEYRING_CONTROL
+unset GNOME_KEYRING_PID
+unset SESSION_MANAGER
+
+# Sugar doesn't handle multiple outputs properly. To avoid issues we keep the
+# first output in the list returned by xrandr and turn off everything else.
+
+OUTPUTS=`$helpersdir/list-outputs`
+
+for output in $OUTPUTS
+do
+   # Default to the first output in the list
+   if [ -z $SUGAR_EMULATOR_OUTPUT ]; then
+       SUGAR_EMULATOR_OUTPUT=$output
+   fi
+
+   if [ $SUGAR_EMULATOR_OUTPUT != $output ]; then
+       xrandr --output $output --off
+   fi
+done
+
+if [ ! -z $SUGAR_EMULATOR_XKBCONFIG ]; then
+    cat $SUGAR_EMULATOR_XKBCONFIG | xkbcomp - $DISPLAY 2> /dev/null
+    rm $SUGAR_EMULATOR_XKBCONFIG
+fi
+
+dbus-launch --exit-with-session $helpersdir/run-with-keyring sugar
