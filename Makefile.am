@@ -1,6 +1,6 @@
 dist_bin_SCRIPTS = run-with-keyring
 
-bin_in_files = sugar-runner.in
+bin_in_files = sugar-runner.in sr-run-test.in
 bin_SCRIPTS = $(bin_in_files:.in=)
 
 dist_helpersdir = $(libexecdir)/$(PACKAGE)
@@ -21,6 +21,9 @@ sugar-runner: sugar-runner.in
 	@sed -e "s|\@helpersdir\@|$(helpersdir)|" $< > $@
 
 xinitrc: xinitrc.in
+	@sed -e "s|\@helpersdir\@|$(helpersdir)|" $< > $@
+
+sr-run-test: sr-run-test.in
 	@sed -e "s|\@helpersdir\@|$(helpersdir)|" $< > $@
 
 find_free_display_SOURCE = find-free-display.c
