@@ -10,8 +10,13 @@ if [ ! -z $DISPLAY ]; then
 fi
 
 if [ -z $DISPLAY ]; then
-    tty_num=`tty | grep -oE '[0-9]+$'`
+    grep -q "allowed_users=anybody" /etc/X11/Xwrapper.config
+    if [ $? -eq 1 ]; then
+        echo "We need to allow everybody to run the X server"
+        sudo -k $helpersdir/tweak-xwrapper
+    fi
 
+    tty_num=`tty | grep -oE '[0-9]+$'`
     xinit $helpersdir/xinitrc -- $display vt$tty_num
 else
     screen_dpi=`$helpersdir/get-screen-dpi`

@@ -1,0 +1,6 @@
+#!/bin/sh
+
+config=/etc/X11/Xwrapper.config
+
+sed -i '/^allowed_users.*/d' $config
+echo "allowed_users=anybody" >> $config

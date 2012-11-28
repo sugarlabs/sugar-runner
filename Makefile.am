@@ -5,7 +5,8 @@ bin_SCRIPTS = $(bin_in_files:.in=)
 
 dist_helpersdir = $(libexecdir)/$(PACKAGE)
 dist_helpers_SCRIPTS = get-screen-dpi \
-                       run-with-keyring
+                       run-with-keyring \
+                       tweak-xwrapper
 
 helpersdir = $(libexecdir)/$(PACKAGE)
 
