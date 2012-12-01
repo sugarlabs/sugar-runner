@@ -30,4 +30,27 @@ if [ ! -z $SUGAR_EMULATOR_XKBCONFIG ]; then
     rm $SUGAR_EMULATOR_XKBCONFIG
 fi
 
+if [ -z $XDG_DATA_HOME ]; then
+    echo "XDG_DATA_HOME must be defined."
+    exit 1
+fi
+
+# Setup an unencrypted keyring so that it
+# doesn't bother us with password dialogs 
+mkdir -p $XDG_DATA_HOME
+
+keyringsdir=$XDG_DATA_HOME/keyrings
+
+if [ ! -d "$keyringsdir" ]; then
+    mkdir -p $keyringsdir
+    echo "default" > $keyringsdir/default
+    cat >> $keyringsdir/default.keyring <<EOF
+[keyring]
+display-name=default
+lock-on-idle=false
+lock-timeout=0
+EOF
+
+fi
+
 dbus-launch --exit-with-session $helpersdir/run-with-keyring sugar
