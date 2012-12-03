@@ -3,6 +3,7 @@
 import argparse
 import os
 import subprocess
+import tempfile
 
 helpers_dir="@helpersdir@"
 
@@ -17,7 +18,7 @@ def _get_screen_dpi():
     args = [os.path.join(helpers_dir, "get-screen-dpi")]
     return subprocess.check_output(args).strip()
 
-def _write_xbconfig():
+def _write_xkb_config():
     f, name = tempfile.mkstemp(prefix="sugar-xkbconfig-")
     subprocess.check_call(["setxkbmap", "-print"], stdout=f)
     os.environ["SUGAR_RUNNER_XKBCONFIG"] = name
@@ -49,6 +50,7 @@ def _get_tty_number():
 args = ["xinit", os.path.join(helpers_dir, "xinitrc"), "--"]
 
 if "DISPLAY" in os.environ:
+    _write_xkb_config()
     process, xid = _run_xephyr_window()
 
     args.append("/usr/bin/Xephyr")
