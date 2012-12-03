@@ -29,10 +29,9 @@ def _allow_to_run_x():
     tweak_wrapper = os.path.join(helpers_dir, "tweak-xwrapper")
     subprocess.check_call(["sudo", "-k", tweak_wrapper])
 
-def _run_xephyr_window():
+def _run_xephyr_window(resolution):
     args = [os.path.join(helpers_dir, "xephyr-window")]
 
-    resolution = os.environ.get("SUGAR_RUNNER_RESOLUTION", None)
     if resolution is not None:
         args.append(resolution)
 
@@ -51,9 +50,6 @@ parser.add_argument("--virtual", action="store_true",
                     help="use an a virtual server")
 args = parser.parse_args()
 
-if args.resolution is not None:
-    os.environ["SUGAR_RUNNER_RESOLUTION"] = args.resolution
-
 if args.output is not None:
     os.environ["SUGAR_RUNNER_OUTPUT"] = args.output
 
@@ -67,7 +63,7 @@ if args.virtual:
                        "-screen", "0", "1024x768x16"])
 elif "DISPLAY" in os.environ:
     _write_xkb_config()
-    process, xid = _run_xephyr_window()
+    process, xid = _run_xephyr_window(args.resolution)
 
     xinit_args.append("/usr/bin/Xephyr")
     xinit_args.append(display)
