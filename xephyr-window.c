@@ -8,7 +8,7 @@ int main(int argc, char **argv)
 {
     Display *display = XOpenDisplay(NULL);
     Window window, root_window;
-    Atom atom;
+    Atom atom, wm_delete_window;
     int width = 100, height = 100;
 
     if (argc > 1) {
@@ -46,10 +46,17 @@ int main(int argc, char **argv)
 
     XMapWindow(display, window);
 
-    XFlush(display);
+    wm_delete_window = XInternAtom(display, "WM_DELETE_WINDOW", False);
+    XSetWMProtocols(display, window, &wm_delete_window, 1);
 
-    while(1) {
-        sleep(60);
+    while (1) {
+        XEvent event;
+        XNextEvent(display, &event);
+
+        if (event.type == ClientMessage &&
+            event.xclient.data.l[0] == wm_delete_window) {
+            break;
+        }
     }
 
     XCloseDisplay(display);
