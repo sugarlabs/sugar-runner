@@ -1,30 +1,46 @@
-#!/bin/bash
+#!/usr/bin/python
 
-helpersdir=@helpersdir@
+import os
+import subprocess
 
-echo "DISPLAY=$DISPLAY"
-echo "DBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS"
+helpers_dir="@helpersdir@"
 
-# Sugar doesn't handle multiple outputs properly. To avoid issues we keep the
-# first output in the list returned by xrandr and turn off everything else.
+devnull = open("/dev/null")
 
-OUTPUTS=`$helpersdir/list-outputs`
+def _print_variables():
+    for variable in ["DISPLAY", "DBUS_SESSION_BUS_ADDRESS"]:
+        print "%s=%s" % (variable, os.environ[variable])
 
-for output in $OUTPUTS
-do
-   # Default to the first output in the list
-   if [ -z $SUGAR_RUNNER_OUTPUT ]; then
-       SUGAR_RUNNER_OUTPUT=$output
-   fi
+def _setup_outputs():
+    """Sugar doesn't handle multiple outputs properly. To avoid issues
+       we keep the first output in the list returned by xrandr and turn
+       off everything else.
+    """
 
-   if [ $SUGAR_RUNNER_OUTPUT != $output ]; then
-       xrandr --output $output --off
-   fi
-done
+    list_outputs_path = os.path.join(helpers_dir, "list-outputs")
+    outputs = subprocess.check_output([list_outputs_path])
+    splitted = outputs.strip().split("\n")
 
-if [ ! -z $SUGAR_RUNNER_XKBCONFIG ]; then
-    cat $SUGAR_RUNNER_XKBCONFIG | xkbcomp - $DISPLAY 2> /dev/null
-    rm $SUGAR_RUNNER_XKBCONFIG
-fi
+    on_output = os.environ.get("SUGAR_RUNNER_OUTPUT", splitted[0])
+    for output in splitted:
+        if output != on_output:
+            subprocess.check_call(["xrandr", "--output", output, "--off"])
 
-dbus-launch --exit-with-session $helpersdir/run-with-keyring sugar
+def _load_xkb_config():
+    if "SUGAR_RUNNER_XKBCONFIG" not in os.environ:
+        return
+
+    with open(os.environ["SUGAR_RUNNER_XKBCONFIG"]) as f:
+        config = f.read()
+ 
+    process = subprocess.Popen(["xkbcomp", "-", os.environ["DISPLAY"]],
+                               stdin=subprocess.PIPE, stdout=devnull)
+    process.communicate(input=config)
+
+_print_variables()
+_setup_outputs()
+_load_xkb_config()
+
+run_with_keyring_path = os.path.join(helpers_dir, "run-with-keyring")
+subprocess.check_call(["dbus-launch", "--exit-with-session",
+                       run_with_keyring_path, "sugar"])
