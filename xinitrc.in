@@ -10,9 +10,9 @@ devnull = open("/dev/null")
 def _write_env(env_path):
     tmp_env_path = "%s.tmp" % env_path
 
+    variable = "DISPLAY" 
     with open(tmp_env_path, "w") as f:
-        for variable in ["DISPLAY", "DBUS_SESSION_BUS_ADDRESS"]:
-            f.write("%s=%s\n" % (variable, os.environ[variable]))
+        f.write("%s=%s\n" % (variable, os.environ[variable]))
 
     os.rename(tmp_env_path, env_path)
 
