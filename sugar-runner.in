@@ -43,6 +43,28 @@ def _get_tty_number():
     head, tail = os.path.split(tty)
     return tail.strip().replace("tty", "")
 
+# Setup an unencrypted keyring so that it
+# doesn't bother us with password dialogs 
+def _setup_keyring():
+    home = os.environ.get("XDG_DATA_HOME", None)
+    if home is None:
+        raise RuntimeError("XDG_DATA_HOME must be defined.")
+
+    os.makedirs(home)
+
+    keyrings_dir = os.path.join(home, "keyrings")
+    if not os.path.exists(keyrings_dir):
+        os.makedirs(keyrings_dir)
+
+        with open(os.path.join(keyrings_dir, "default"), "w") as f:
+            f.write("default")
+
+        with open(os.path.join(keyrings_dir, "default.keyring"), "w") as f:
+            f.write("[keyring]\n" \
+                    "display-name=default\n" \
+                    "lock-on-idle=false\n" \
+                    "lock-timeout=0")
+
 parser = argparse.ArgumentParser(description="Run sugar")
 parser.add_argument("--resolution", help="screen resolution")
 parser.add_argument("--output", help="name of the output")
@@ -52,6 +74,8 @@ args = parser.parse_args()
 
 if args.output is not None:
     os.environ["SUGAR_RUNNER_OUTPUT"] = args.output
+
+_setup_keyring()    
 
 xinit_args = ["xinit", os.path.join(helpers_dir, "xinitrc"), "--"]
 display = _find_free_display()
