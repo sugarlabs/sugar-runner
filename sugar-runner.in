@@ -50,11 +50,17 @@ def _setup_keyring():
     if home is None:
         raise RuntimeError("XDG_DATA_HOME must be defined.")
 
-    os.makedirs(home)
+    try:
+        os.makedirs(home)
+    except OSError:
+        pass
 
     keyrings_dir = os.path.join(home, "keyrings")
     if not os.path.exists(keyrings_dir):
-        os.makedirs(keyrings_dir)
+        try:
+            os.makedirs(keyrings_dir)
+        except OSError:
+            pass
 
         with open(os.path.join(keyrings_dir, "default"), "w") as f:
             f.write("default")
@@ -64,6 +70,17 @@ def _setup_keyring():
                     "display-name=default\n" \
                     "lock-on-idle=false\n" \
                     "lock-timeout=0")
+ 
+def _setup_variables():
+    to_unset = ["GPG_AGENT_INFO",
+                "SSH_AUTH_SOCK",
+                "GNOME_KEYRING_CONTROL",
+                "GNOME_KEYRING_PID",
+                "SESSION_MANAGER"]
+
+    for name in to_unset:
+        if name in os.environ:
+            del os.environ[name]
 
 parser = argparse.ArgumentParser(description="Run sugar")
 parser.add_argument("--resolution", help="screen resolution")
@@ -75,6 +92,7 @@ args = parser.parse_args()
 if args.output is not None:
     os.environ["SUGAR_RUNNER_OUTPUT"] = args.output
 
+_setup_variables()
 _setup_keyring()    
 
 xinit_args = ["xinit", os.path.join(helpers_dir, "xinitrc"), "--"]

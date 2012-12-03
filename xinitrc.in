@@ -5,12 +5,6 @@ helpersdir=@helpersdir@
 echo "DISPLAY=$DISPLAY"
 echo "DBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS"
 
-unset GPG_AGENT_INFO
-unset SSH_AUTH_SOCK
-unset GNOME_KEYRING_CONTROL
-unset GNOME_KEYRING_PID
-unset SESSION_MANAGER
-
 # Sugar doesn't handle multiple outputs properly. To avoid issues we keep the
 # first output in the list returned by xrandr and turn off everything else.
 
