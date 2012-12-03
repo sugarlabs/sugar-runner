@@ -8,9 +8,13 @@ helpers_dir="@helpersdir@"
 devnull = open("/dev/null")
 
 def _write_env(env_path):
-    with open(env_path, "w") as f:
+    tmp_env_path = "%s.tmp" % env_path
+
+    with open(tmp_env_path, "w") as f:
         for variable in ["DISPLAY", "DBUS_SESSION_BUS_ADDRESS"]:
             f.write("%s=%s\n" % (variable, os.environ[variable]))
+
+    os.rename(tmp_env_path, env_path)
 
 def _setup_outputs():
     """Sugar doesn't handle multiple outputs properly. To avoid issues

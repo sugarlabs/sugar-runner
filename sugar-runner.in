@@ -71,7 +71,7 @@ def _setup_keyring():
                     "lock-on-idle=false\n" \
                     "lock-timeout=0")
  
-def _setup_variables():
+def _setup_variables(args):
     to_unset = ["GPG_AGENT_INFO",
                 "SSH_AUTH_SOCK",
                 "GNOME_KEYRING_CONTROL",
@@ -82,6 +82,12 @@ def _setup_variables():
         if name in os.environ:
             del os.environ[name]
 
+    if args.output is not None:
+        os.environ["SUGAR_RUNNER_OUTPUT"] = args.output
+
+    if args.env_path is not None:
+        os.environ["SUGAR_RUNNER_ENV_PATH"] = args.env_path
+
 parser = argparse.ArgumentParser(description="Run sugar")
 parser.add_argument("--resolution", help="screen resolution")
 parser.add_argument("--output", help="name of the output")
@@ -90,13 +96,7 @@ parser.add_argument("--virtual", action="store_true",
 parser.add_argument("--env-path", help="path to write environment variables")
 args = parser.parse_args()
 
-if args.output is not None:
-    os.environ["SUGAR_RUNNER_OUTPUT"] = args.output
-
-if args.env_path is not None:
-    os.environ["SUGAR_RUNNER_ENV_PATH"] = args.env_path
-
-_setup_variables()
+_setup_variables(args)
 _setup_keyring()    
 
 xinit_args = ["xinit", os.path.join(helpers_dir, "xinitrc"), "--"]
