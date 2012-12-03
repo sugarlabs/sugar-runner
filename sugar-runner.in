@@ -1,38 +1,63 @@
-#!/bin/bash
+#!/usr/bin/python
 
-helpersdir=@helpersdir@
-display=`$helpersdir/find-free-display`
+import argparse
+import os
+import subprocess
 
-if [ ! -z $DISPLAY ]; then
-    SUGAR_RUNNER_XKBCONFIG=`mktemp -t sugar-xkbconfig-XXXXXX`
-    setxkbmap -print > $SUGAR_RUNNER_XKBCONFIG
-    export SUGAR_RUNNER_XKBCONFIG
-fi
+helpers_dir="@helpersdir@"
 
-if [ -z $DISPLAY ]; then
-    grep -q "allowed_users=anybody" /etc/X11/Xwrapper.config
-    if [ $? -eq 1 ]; then
-        echo "We need to allow everybody to run the X server"
-        sudo -k $helpersdir/tweak-xwrapper
-    fi
+parser = argparse.ArgumentParser(description="Run sugar")
+args = parser.parse_args()
 
-    tty_num=`tty | grep -oE '[0-9]+$'`
-    xinit $helpersdir/xinitrc -- $display vt$tty_num
-else
-    screen_dpi=`$helpersdir/get-screen-dpi`
-    xephyr_options="-dpi $screen_dpi"
+def _find_free_display():
+    args = [os.path.join(helpers_dir, "find-free-display")]
+    return subprocess.check_output(args).strip()
 
-    xidfile=`mktemp -t sugar-xephyr-xid-XXXXXX`
-    $helpersdir/xephyr-window $SUGAR_RUNNER_RESOLUTION > $xidfile &
-    xephyrwindowpid=$!
+def _get_screen_dpi():
+    args = [os.path.join(helpers_dir, "get-screen-dpi")]
+    return subprocess.check_output(args).strip()
 
-    while [ ! -s $xidfile ]
-    do
-        sleep 1
-    done
+def _write_xbconfig():
+    f, name = tempfile.mkstemp(prefix="sugar-xkbconfig-")
+    subprocess.check_call(["setxkbmap", "-print"], stdout=f)
+    os.environ["SUGAR_RUNNER_XKBCONFIG"] = name
 
-    xephyr_options="$xephyr_options -parent `cat $xidfile`"
-    xinit $helpersdir/xinitrc -- /usr/bin/Xephyr $display $xephyr_options
+def _allow_to_run_x():
+    with open("/etc/X11/Xwrapper.config") as f:
+        if "allowed_users=anybody" in f.read():
+            return
 
-    kill $xephyrwindowpid
-fi
+    print "We need to allow everybody to run the X server"
+    tweak_wrapper = os.path.join(helpers_dir, "tweak-xwrapper")
+    subprocess.check_call(["sudo", "-k", tweak_wrapper])
+
+def _run_xephyr_window():
+    args = [os.path.join(helpers_dir, "xephyr-window")]
+
+    resolution = os.environ.get("SUGAR_RUNNER_RESOLUTION", None)
+    if resolution is not None:
+        args.append(resolution)
+
+    process = subprocess.Popen(args, stdout=subprocess.PIPE)
+    return process, process.stdout.readline().strip()
+
+def _get_tty_number():
+    tty = subprocess.check_output(["tty"])
+    head, tail = os.path.split(tty)
+    return tail.strip().replace("tty", "")
+
+args = ["xinit", os.path.join(helpers_dir, "xinitrc"), "--"]
+
+if "DISPLAY" in os.environ:
+    process, xid = _run_xephyr_window()
+
+    args.append("/usr/bin/Xephyr")
+    args.append(_find_free_display())
+    args.extend(["-dpi", _get_screen_dpi()])
+    args.extend(["-parent", xid])
+else:
+    _allow_to_run_x()
+    args.append(_find_free_display())
+    args.append("vt%s" % _get_tty_number())
+
+os.execlp(args[0], *args)
