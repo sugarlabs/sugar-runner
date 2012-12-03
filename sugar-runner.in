@@ -87,10 +87,14 @@ parser.add_argument("--resolution", help="screen resolution")
 parser.add_argument("--output", help="name of the output")
 parser.add_argument("--virtual", action="store_true",
                     help="use an a virtual server")
+parser.add_argument("--env-path", help="path to write environment variables")
 args = parser.parse_args()
 
 if args.output is not None:
     os.environ["SUGAR_RUNNER_OUTPUT"] = args.output
+
+if args.env_path is not None:
+    os.environ["SUGAR_RUNNER_ENV_PATH"] = args.env_path
 
 _setup_variables()
 _setup_keyring()    

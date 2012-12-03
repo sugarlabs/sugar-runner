@@ -7,9 +7,10 @@ helpers_dir="@helpersdir@"
 
 devnull = open("/dev/null")
 
-def _print_variables():
-    for variable in ["DISPLAY", "DBUS_SESSION_BUS_ADDRESS"]:
-        print "%s=%s" % (variable, os.environ[variable])
+def _write_env(env_path):
+    with open(env_path, "w") as f:
+        for variable in ["DISPLAY", "DBUS_SESSION_BUS_ADDRESS"]:
+            f.write("%s=%s\n" % (variable, os.environ[variable]))
 
 def _setup_outputs():
     """Sugar doesn't handle multiple outputs properly. To avoid issues
@@ -37,7 +38,9 @@ def _load_xkb_config():
                                stdin=subprocess.PIPE, stdout=devnull)
     process.communicate(input=config)
 
-_print_variables()
+if "SUGAR_RUNNER_ENV_PATH" in os.environ:
+    _write_env(os.environ["SUGAR_RUNNER_ENV_PATH"])
+
 _setup_outputs()
 _load_xkb_config()
 
