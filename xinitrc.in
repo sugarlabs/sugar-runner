@@ -16,18 +16,18 @@ OUTPUTS=`$helpersdir/list-outputs`
 for output in $OUTPUTS
 do
    # Default to the first output in the list
-   if [ -z $SUGAR_EMULATOR_OUTPUT ]; then
-       SUGAR_EMULATOR_OUTPUT=$output
+   if [ -z $SUGAR_RUNNER_OUTPUT ]; then
+       SUGAR_RUNNER_OUTPUT=$output
    fi
 
-   if [ $SUGAR_EMULATOR_OUTPUT != $output ]; then
+   if [ $SUGAR_RUNNER_OUTPUT != $output ]; then
        xrandr --output $output --off
    fi
 done
 
-if [ ! -z $SUGAR_EMULATOR_XKBCONFIG ]; then
-    cat $SUGAR_EMULATOR_XKBCONFIG | xkbcomp - $DISPLAY 2> /dev/null
-    rm $SUGAR_EMULATOR_XKBCONFIG
+if [ ! -z $SUGAR_RUNNER_XKBCONFIG ]; then
+    cat $SUGAR_RUNNER_XKBCONFIG | xkbcomp - $DISPLAY 2> /dev/null
+    rm $SUGAR_RUNNER_XKBCONFIG
 fi
 
 if [ -z $XDG_DATA_HOME ]; then

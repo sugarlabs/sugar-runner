@@ -4,9 +4,9 @@ helpersdir=@helpersdir@
 display=`$helpersdir/find-free-display`
 
 if [ ! -z $DISPLAY ]; then
-    SUGAR_EMULATOR_XKBCONFIG=`mktemp -t sugar-xkbconfig-XXXXXX`
-    setxkbmap -print > $SUGAR_EMULATOR_XKBCONFIG
-    export SUGAR_EMULATOR_XKBCONFIG
+    SUGAR_RUNNER_XKBCONFIG=`mktemp -t sugar-xkbconfig-XXXXXX`
+    setxkbmap -print > $SUGAR_RUNNER_XKBCONFIG
+    export SUGAR_RUNNER_XKBCONFIG
 fi
 
 if [ -z $DISPLAY ]; then
@@ -23,7 +23,7 @@ else
     xephyr_options="-dpi $screen_dpi"
 
     xidfile=`mktemp -t sugar-xephyr-xid-XXXXXX`
-    $helpersdir/xephyr-window $RESOLUTION > $xidfile &
+    $helpersdir/xephyr-window $SUGAR_RUNNER_RESOLUTION > $xidfile &
     xephyrwindowpid=$!
 
     while [ ! -s $xidfile ]
