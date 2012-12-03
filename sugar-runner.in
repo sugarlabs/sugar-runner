@@ -85,15 +85,16 @@ def _setup_variables(args):
     if args.output is not None:
         os.environ["SUGAR_RUNNER_OUTPUT"] = args.output
 
-    if args.env_path is not None:
-        os.environ["SUGAR_RUNNER_ENV_PATH"] = args.env_path
+    if args.display_path is not None:
+        os.environ["SUGAR_RUNNER_DISPLAY_PATH"] = args.display_path
 
 parser = argparse.ArgumentParser(description="Run sugar")
 parser.add_argument("--resolution", help="screen resolution")
 parser.add_argument("--output", help="name of the output")
 parser.add_argument("--virtual", action="store_true",
                     help="use an a virtual server")
-parser.add_argument("--env-path", help="path to write environment variables")
+parser.add_argument("--display-path",
+                    help="write the display number at this path")
 args = parser.parse_args()
 
 _setup_variables(args)

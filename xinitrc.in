@@ -7,14 +7,13 @@ helpers_dir="@helpersdir@"
 
 devnull = open("/dev/null")
 
-def _write_env(env_path):
-    tmp_env_path = "%s.tmp" % env_path
+def _write_display(display_path):
+    tmp_display_path = "%s.tmp" % display_path
 
-    variable = "DISPLAY" 
     with open(tmp_env_path, "w") as f:
-        f.write("%s=%s\n" % (variable, os.environ[variable]))
+        f.write(os.environ["DISPLAY"])
 
-    os.rename(tmp_env_path, env_path)
+    os.rename(tmp_display_path, display_path)
 
 def _setup_outputs():
     """Sugar doesn't handle multiple outputs properly. To avoid issues
@@ -42,8 +41,8 @@ def _load_xkb_config():
                                stdin=subprocess.PIPE, stdout=devnull)
     process.communicate(input=config)
 
-if "SUGAR_RUNNER_ENV_PATH" in os.environ:
-    _write_env(os.environ["SUGAR_RUNNER_ENV_PATH"])
+if "SUGAR_RUNNER_DISPLAY_PATH" in os.environ:
+    _write_display(os.environ["SUGAR_RUNNER_DISPLAY_PATH"])
 
 _setup_outputs()
 _load_xkb_config()
