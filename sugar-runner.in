@@ -7,9 +7,6 @@ import tempfile
 
 helpers_dir="@helpersdir@"
 
-parser = argparse.ArgumentParser(description="Run sugar")
-args = parser.parse_args()
-
 def _find_free_display():
     args = [os.path.join(helpers_dir, "find-free-display")]
     return subprocess.check_output(args).strip()
@@ -46,6 +43,17 @@ def _get_tty_number():
     tty = subprocess.check_output(["tty"])
     head, tail = os.path.split(tty)
     return tail.strip().replace("tty", "")
+
+parser = argparse.ArgumentParser(description="Run sugar")
+parser.add_argument("--resolution", help="screen resolution")
+parser.add_argument("--output", help="name of the output")
+args = parser.parse_args()
+
+if args.resolution is not None:
+    os.environ["SUGAR_RUNNER_RESOLUTION"] = args.resolution
+
+if args.output is not None:
+    os.environ["SUGAR_RUNNER_OUTPUT"] = args.output
 
 args = ["xinit", os.path.join(helpers_dir, "xinitrc"), "--"]
 
