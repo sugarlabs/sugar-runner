@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python -u
 
 import argparse
 import os
@@ -47,6 +47,8 @@ def _get_tty_number():
 parser = argparse.ArgumentParser(description="Run sugar")
 parser.add_argument("--resolution", help="screen resolution")
 parser.add_argument("--output", help="name of the output")
+parser.add_argument("--virtual", action="store_true",
+                    help="use an a virtual server")
 args = parser.parse_args()
 
 if args.resolution is not None:
@@ -55,19 +57,25 @@ if args.resolution is not None:
 if args.output is not None:
     os.environ["SUGAR_RUNNER_OUTPUT"] = args.output
 
-args = ["xinit", os.path.join(helpers_dir, "xinitrc"), "--"]
+xinit_args = ["xinit", os.path.join(helpers_dir, "xinitrc"), "--"]
+display = _find_free_display()
 
-if "DISPLAY" in os.environ:
+if args.virtual:
+    xinit_args.append("/usr/bin/Xvfb")
+    xinit_args.append(display)
+    xinit_args.extend(["-ac", "-noreset", "-shmem",
+                       "-screen", "0", "1024x768x16"])
+elif "DISPLAY" in os.environ:
     _write_xkb_config()
     process, xid = _run_xephyr_window()
 
-    args.append("/usr/bin/Xephyr")
-    args.append(_find_free_display())
-    args.extend(["-dpi", _get_screen_dpi()])
-    args.extend(["-parent", xid])
+    xinit_args.append("/usr/bin/Xephyr")
+    xinit_args.append(display)
+    xinit_args.extend(["-dpi", _get_screen_dpi()])
+    xinit_args.extend(["-parent", xid])
 else:
     _allow_to_run_x()
-    args.append(_find_free_display())
-    args.append("vt%s" % _get_tty_number())
+    xinit_args.append(display)
+    xinit_args.append("vt%s" % _get_tty_number())
 
-os.execlp(args[0], *args)
+os.execlp(xinit_args[0], *xinit_args)
