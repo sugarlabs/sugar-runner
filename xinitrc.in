@@ -10,7 +10,7 @@ devnull = open("/dev/null")
 def _write_display(display_path):
     tmp_display_path = "%s.tmp" % display_path
 
-    with open(tmp_env_path, "w") as f:
+    with open(tmp_display_path, "w") as f:
         f.write(os.environ["DISPLAY"])
 
     os.rename(tmp_display_path, display_path)
