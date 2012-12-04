@@ -114,9 +114,6 @@ elif "DISPLAY" in os.environ:
     
     window_process, xid = _run_xephyr_window(args.resolution)
 
-    # FIXME if Xephyr runs immediately it doesn't get the full screen size
-    time.sleep(1)
-
     xinit_args.append("/usr/bin/Xephyr")
     xinit_args.append(display)
     xinit_args.extend(["-dpi", str(_get_screen_dpi())])

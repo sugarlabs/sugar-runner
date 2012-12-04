@@ -6,6 +6,7 @@
 static Display *display = NULL;
 static Window window = 0;
 static Atom wm_delete_window;
+static gboolean is_fullscreen = FALSE;
 
 void
 sugar_runner_window_create(int width, int height, gboolean fullscreen)
@@ -20,6 +21,8 @@ sugar_runner_window_create(int width, int height, gboolean fullscreen)
 
     window = XCreateSimpleWindow(display, root_window, 0, 0,
                                  width, height, 0, 0, 0);
+
+    XSelectInput (display, window, StructureNotifyMask);
 
     if (fullscreen) {
         Atom atom;
@@ -44,6 +47,12 @@ sugar_runner_window_wait(void)
 
     XNextEvent(display, &event);
 
+    if (event.type == ConfigureNotify) {
+        XConfigureEvent configure_event = event.xconfigure;
+        is_fullscreen = (DisplayWidth(display, 0) == configure_event.width &&
+                         DisplayHeight(display, 0) == configure_event.height);
+    }
+
     if (event.type == ClientMessage &&
         event.xclient.data.l[0] == wm_delete_window) {
         XCloseDisplay(display);
@@ -51,6 +60,12 @@ sugar_runner_window_wait(void)
     }
 
     return TRUE;
+}
+
+gboolean
+sugar_runner_window_is_fullscreen(void)
+{
+    return is_fullscreen;
 }
 
 unsigned long

@@ -5,11 +5,12 @@
 
 G_BEGIN_DECLS
 
-void            sugar_runner_window_create  (int width,
-                                             int height,
-                                             gboolean fullscreen);
-gboolean        sugar_runner_window_wait    (void);
-unsigned long   sugar_runner_window_get_xid (void);
+void            sugar_runner_window_create        (int width,
+                                                   int height,
+                                                   gboolean fullscreen);
+gboolean        sugar_runner_window_wait          (void);
+gboolean        sugar_runner_window_is_fullscreen (void);
+unsigned long   sugar_runner_window_get_xid       (void);
 
 G_END_DECLS
 
