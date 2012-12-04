@@ -1,0 +1,60 @@
+#include <X11/Xlib.h>
+#include <X11/Xatom.h>
+
+#include "sugar-runner-window.h"
+
+static Display *display = NULL;
+static Window window = 0;
+static Atom wm_delete_window;
+
+void
+sugar_runner_window_create(int width, int height, gboolean fullscreen)
+{
+    Window root_window;
+
+    if (display == NULL) {
+        display = XOpenDisplay(NULL);
+    }
+
+    root_window = RootWindow(display, 0);
+
+    window = XCreateSimpleWindow(display, root_window, 0, 0,
+                                 width, height, 0, 0, 0);
+
+    if (fullscreen) {
+        Atom atom;
+
+        atom = XInternAtom(display, "_NET_WM_STATE_FULLSCREEN", True);
+        XChangeProperty(display, window,
+                        XInternAtom(display, "_NET_WM_STATE", True),
+                        XA_ATOM, 32, PropModeReplace,
+                        (unsigned char *)&atom, 1);
+    }
+
+    XMapWindow(display, window);
+
+    wm_delete_window = XInternAtom(display, "WM_DELETE_WINDOW", False);
+    XSetWMProtocols(display, window, &wm_delete_window, 1);
+}
+
+gboolean
+sugar_runner_window_wait(void)
+{
+    XEvent event;
+
+    XNextEvent(display, &event);
+
+    if (event.type == ClientMessage &&
+        event.xclient.data.l[0] == wm_delete_window) {
+        XCloseDisplay(display);
+        return FALSE;
+    }
+
+    return TRUE;
+}
+
+unsigned long
+sugar_runner_window_get_xid(void)
+{
+    return window;
+}

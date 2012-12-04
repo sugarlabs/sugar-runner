@@ -2,6 +2,10 @@
 
 import os
 import subprocess
+import signal
+
+from gi.repository import SugarRunner
+from gi.repository import GObject
 
 helpers_dir="@helpersdir@"
 
@@ -20,13 +24,10 @@ def _setup_outputs():
        we keep the first output in the list returned by xrandr and turn
        off everything else.
     """
+    outputs = SugarRunner.list_outputs()
 
-    list_outputs_path = os.path.join(helpers_dir, "list-outputs")
-    outputs = subprocess.check_output([list_outputs_path])
-    splitted = outputs.strip().split("\n")
-
-    on_output = os.environ.get("SUGAR_RUNNER_OUTPUT", splitted[0])
-    for output in splitted:
+    on_output = os.environ.get("SUGAR_RUNNER_OUTPUT", outputs[0])
+    for output in outputs:
         if output != on_output:
             subprocess.check_call(["xrandr", "--output", output, "--off"])
 
@@ -41,6 +42,11 @@ def _load_xkb_config():
                                stdin=subprocess.PIPE, stdout=devnull)
     process.communicate(input=config)
 
+def _child_watch_cb(pid, condition):
+    window_pid = os.environ.get("SUGAR_RUNNER_WINDOW_PID", None)
+    if window_pid:
+        os.kill(int(window_pid), signal.SIGTERM)
+
 if "SUGAR_RUNNER_DISPLAY_PATH" in os.environ:
     _write_display(os.environ["SUGAR_RUNNER_DISPLAY_PATH"])
 
@@ -50,4 +56,10 @@ _load_xkb_config()
 args = ["dbus-launch", "--exit-with-session",
         os.path.join(helpers_dir, "run-with-keyring"),
         "sugar"]
-os.execlp(args[0], *args)
+
+process = subprocess.check_call(args)
+
+GObject.child_watch_add(process.pid, _child_watch_cb)
+
+main_loop = GObject.MainLoop()
+main_loop.run()

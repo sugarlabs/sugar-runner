@@ -5,11 +5,9 @@ import os
 import subprocess
 import tempfile
 
-helpers_dir="@helpersdir@"
+from gi.repository import SugarRunner
 
-def _find_free_display():
-    args = [os.path.join(helpers_dir, "find-free-display")]
-    return subprocess.check_output(args).strip()
+helpers_dir="@helpersdir@"
 
 def _get_screen_dpi():
     args = [os.path.join(helpers_dir, "get-screen-dpi")]
@@ -33,7 +31,7 @@ def _run_xephyr_window(resolution):
     args = [os.path.join(helpers_dir, "xephyr-window")]
 
     if resolution is not None:
-        args.append(resolution)
+        args.extend(["--resolution", resolution])
 
     process = subprocess.Popen(args, stdout=subprocess.PIPE)
     return process, process.stdout.readline().strip()
@@ -101,7 +99,8 @@ _setup_variables(args)
 _setup_keyring()    
 
 xinit_args = ["xinit", os.path.join(helpers_dir, "xinitrc"), "--"]
-display = _find_free_display()
+display = SugarRunner.find_free_display()
+window_process = None
 
 if args.virtual:
     xinit_args.append("/usr/bin/Xvfb")
@@ -110,7 +109,8 @@ if args.virtual:
                        "-screen", "0", "1024x768x16"])
 elif "DISPLAY" in os.environ:
     _write_xkb_config()
-    process, xid = _run_xephyr_window(args.resolution)
+    
+    window_process, xid = _run_xephyr_window(args.resolution)
 
     xinit_args.append("/usr/bin/Xephyr")
     xinit_args.append(display)
@@ -121,4 +121,12 @@ else:
     xinit_args.append(display)
     xinit_args.append("vt%s" % _get_tty_number())
 
-os.execlp(xinit_args[0], *xinit_args)
+if window_process:
+    os.environ["SUGAR_RUNNER_WINDOW_PID"] = str(window_process.pid)
+
+try:
+    process = subprocess.check_call(xinit_args)
+    os.environ["SUGAR_RUNNER_WINDOW_PID"] = str(process.pid)
+except KeyboardInterrupt:
+    if window_process:
+        window_process.terminate()

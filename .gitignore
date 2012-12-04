@@ -6,6 +6,9 @@ aclocal.m4
 autom4te.cache/
 config.log
 config.status
+config.guess
+config.sub
+ltmain.sh
 configure
 depcomp
 install-sh
@@ -15,3 +18,4 @@ list-outputs
 xephyr-window
 sugar-emulator
 xinitrc
+m4
