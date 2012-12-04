@@ -1,23 +1,16 @@
 bin_in_files = sugar-runner.in
 bin_SCRIPTS = $(bin_in_files:.in=)
 
-dist_helpersdir = $(libexecdir)/$(PACKAGE)
-dist_helpers_SCRIPTS = tweak-xwrapper \
-                       xephyr-window
-
-helpersdir = $(libexecdir)/$(PACKAGE)
-
-helpers_scripts_in_files = xinitrc.in
-helpers_SCRIPTS = $(helpers_scripts_in_files:.in=)
-
 sugar-runner: sugar-runner.in
 	@sed -e "s|\@helpersdir\@|$(helpersdir)|" $< > $@
 
-xinitrc: xinitrc.in
-	@sed -e "s|\@helpersdir\@|$(helpersdir)|" $< > $@
+helpersdir = $(libexecdir)/$(PACKAGE)
+dist_helpers_SCRIPTS = tweak-xwrapper \
+                       xephyr-window \
+                       xinitrc
 
-CLEANFILES = $(bin_SCRIPTS) $(helpers_SCRIPTS)
-EXTRA_DIST = $(bin_in_files) $(helpers_scripts_in_files)
+CLEANFILES = $(bin_SCRIPTS)
+EXTRA_DIST = $(bin_in_files)
 
 lib_LTLIBRARIES = libsugarrunner.la
 

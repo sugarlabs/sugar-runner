@@ -7,8 +7,6 @@ import signal
 from gi.repository import SugarRunner
 from gi.repository import GObject
 
-helpers_dir="@helpersdir@"
-
 devnull = open("/dev/null")
 
 def _write_display(display_path):

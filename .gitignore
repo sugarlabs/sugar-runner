@@ -13,5 +13,4 @@ configure
 depcomp
 install-sh
 missing
-xinitrc
 m4
