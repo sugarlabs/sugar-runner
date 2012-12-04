@@ -7,11 +7,12 @@ import tempfile
 import time
 
 from gi.repository import SugarRunner
-from gi.repository import Gtk
 
 helpers_dir="@helpersdir@"
 
 def _get_screen_dpi():
+    from gi.repository import Gtk
+
     settings = Gtk.Settings.get_default()
     return settings.get_property('gtk-xft-dpi') / 1024
 
