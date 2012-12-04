@@ -131,7 +131,6 @@ if window_process:
 
 try:
     process = subprocess.check_call(xinit_args)
-    os.environ["SUGAR_RUNNER_WINDOW_PID"] = str(process.pid)
 except KeyboardInterrupt:
     if window_process:
         window_process.terminate()
