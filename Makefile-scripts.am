@@ -1,0 +1,13 @@
+bin_in_files = $(SCRIPTSDIR)/sugar-runner.in
+bin_SCRIPTS = $(bin_in_files:.in=)
+
+$(SCRIPTSDIR)/sugar-runner: $(SCRIPTSDIR)/sugar-runner.in
+	@sed -e "s|\@helpersdir\@|$(helpersdir)|" $< > $@
+
+helpersdir = $(libexecdir)/$(PACKAGE)
+dist_helpers_SCRIPTS = $(SCRIPTSDIR)/xinitrc \
+                       $(SCRIPTSDIR)/tweak-xwrapper \
+                       $(SCRIPTSDIR)/xephyr-window
+
+CLEANFILES += $(bin_SCRIPTS)
+EXTRA_DIST += $(bin_in_files)

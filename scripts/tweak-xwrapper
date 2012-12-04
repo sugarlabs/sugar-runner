@@ -1,0 +1,12 @@
+#!/usr/bin/python -u
+
+config_path = "/etc/X11/Xwrapper.config"
+
+with open(config_path) as f:
+    new_config = [line for line in f.readlines() \
+                  if "allowed_users" not in line]
+
+new_config.append("allowed_users=anybody\n")
+
+with open(config_path, "w") as f:
+    f.write("".join(new_config)) 
