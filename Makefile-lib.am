@@ -19,7 +19,6 @@ INTROSPECTION_SCANNER_ARGS = \
 SugarRunner_1_0_gir_LIBS = libsugarrunner.la
 SugarRunner_1_0_gir_FILES = $(libsugarrunner_la_SOURCES)
 SugarRunner_1_0_gir_PACKAGES = glib-2.0
-SugarRunner_1_0_gir_EXPORT_PACKAGES = SugaRunner-1.0
 
 girdir = $(datadir)/gir-1.0
 gir_DATA = SugarRunner-1.0.gir
