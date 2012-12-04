@@ -1,0 +1,26 @@
+#!/usr/bin/python -u
+
+import argparse
+
+from gi.repository import SugarRunner
+
+xid_printed = False
+
+parser = argparse.ArgumentParser(description="A window to host Xephyr")
+parser.add_argument("--resolution", help="screen resolution")
+args = parser.parse_args()
+
+if args.resolution:
+    width, height = args.resolution.strip().split("x")
+    fullscreen = False
+else:
+    width, height = 1, 1
+    fullscreen = True
+
+SugarRunner.window_create(int(width), int(height), fullscreen)
+
+while SugarRunner.window_wait():
+    if not fullscreen or SugarRunner.window_is_fullscreen():
+        if not xid_printed:
+            print SugarRunner.window_get_xid()
+            xid_printed = True

@@ -13,9 +13,5 @@ configure
 depcomp
 install-sh
 missing
-find-free-display
-list-outputs
-xephyr-window
-sugar-emulator
 xinitrc
 m4
