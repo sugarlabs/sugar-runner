@@ -47,6 +47,7 @@ if "SUGAR_RUNNER_DISPLAY_PATH" in os.environ:
 _setup_outputs()
 _load_xkb_config()
 
-run_with_keyring_path = os.path.join(helpers_dir, "run-with-keyring")
-subprocess.check_call(["dbus-launch", "--exit-with-session",
-                       run_with_keyring_path, "sugar"])
+args = ["dbus-launch", "--exit-with-session",
+        os.path.join(helpers_dir, "run-with-keyring"),
+        "sugar"]
+os.execlp(args[0], *args)
