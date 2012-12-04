@@ -4,14 +4,16 @@ import argparse
 import os
 import subprocess
 import tempfile
+import time
 
 from gi.repository import SugarRunner
+from gi.repository import Gtk
 
 helpers_dir="@helpersdir@"
 
 def _get_screen_dpi():
-    args = [os.path.join(helpers_dir, "get-screen-dpi")]
-    return subprocess.check_output(args).strip()
+    settings = Gtk.Settings.get_default()
+    return settings.get_property('gtk-xft-dpi') / 1024
 
 def _write_xkb_config():
     f, name = tempfile.mkstemp(prefix="sugar-xkbconfig-")
@@ -112,9 +114,12 @@ elif "DISPLAY" in os.environ:
     
     window_process, xid = _run_xephyr_window(args.resolution)
 
+    # FIXME if Xephyr runs immediately it doesn't get the full screen size
+    time.sleep(1)
+
     xinit_args.append("/usr/bin/Xephyr")
     xinit_args.append(display)
-    xinit_args.extend(["-dpi", _get_screen_dpi()])
+    xinit_args.extend(["-dpi", str(_get_screen_dpi())])
     xinit_args.extend(["-parent", xid])
 else:
     _allow_to_run_x()
