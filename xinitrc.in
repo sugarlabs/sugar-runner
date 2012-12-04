@@ -47,17 +47,30 @@ def _child_watch_cb(pid, condition):
     if window_pid:
         os.kill(int(window_pid), signal.SIGTERM)
 
+def _add_output_to_environ(output):
+    for line in output.strip().split("\n"):
+        name, value = line.strip().split("=", 1)
+        os.environ[name] = value
+
+def _start_dbus():
+    output = subprocess.check_output(["dbus-launch", "--exit-with-session"])
+    _add_output_to_environ(output)
+
+def _start_keyring():
+    output = subprocess.check_output(["gnome-keyring-daemon",
+                                      "--start", "-d",
+                                      "--components=secrets,pkcs11,ssh,gpg"])
+    _add_output_to_environ(output)
+
 if "SUGAR_RUNNER_DISPLAY_PATH" in os.environ:
     _write_display(os.environ["SUGAR_RUNNER_DISPLAY_PATH"])
 
 _setup_outputs()
 _load_xkb_config()
+_start_dbus()
+_start_keyring()
 
-args = ["dbus-launch", "--exit-with-session",
-        os.path.join(helpers_dir, "run-with-keyring"),
-        "sugar"]
-
-process = subprocess.check_call(args)
+process = subprocess.check_call(["sugar"])
 
 GObject.child_watch_add(process.pid, _child_watch_cb)
 

@@ -1,11 +1,8 @@
-dist_bin_SCRIPTS = run-with-keyring
-
 bin_in_files = sugar-runner.in
 bin_SCRIPTS = $(bin_in_files:.in=)
 
 dist_helpersdir = $(libexecdir)/$(PACKAGE)
-dist_helpers_SCRIPTS = run-with-keyring \
-                       tweak-xwrapper \
+dist_helpers_SCRIPTS = tweak-xwrapper \
                        xephyr-window
 
 helpersdir = $(libexecdir)/$(PACKAGE)
