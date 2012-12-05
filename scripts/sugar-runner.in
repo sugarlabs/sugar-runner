@@ -124,11 +124,15 @@ else:
     xinit_args.append(display)
     xinit_args.append("vt%s" % _get_tty_number())
 
-if window_process:
-    os.environ["SUGAR_RUNNER_WINDOW_PID"] = str(window_process.pid)
-
 try:
-    process = subprocess.check_call(xinit_args)
+    process = subprocess.Popen(xinit_args)
+
+    result = None
+    while result is None:
+        result = process.poll()
+        time.sleep(0.1)
 except KeyboardInterrupt:
-    if window_process:
-        window_process.terminate()
+    pass
+
+if window_process:
+    window_process.terminate()

@@ -5,7 +5,6 @@ import subprocess
 import signal
 
 from gi.repository import SugarRunner
-from gi.repository import GObject
 
 devnull = open("/dev/null")
 main_loop = None
@@ -74,9 +73,4 @@ _load_xkb_config()
 _start_dbus()
 _start_keyring()
 
-process = subprocess.Popen(["sugar"])
-
-GObject.child_watch_add(process.pid, _child_watch_cb)
-
-main_loop = GObject.MainLoop()
-main_loop.run()
+subprocess.check_call(["sugar"])
