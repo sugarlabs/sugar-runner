@@ -23,6 +23,8 @@ def _setup_outputs():
        off everything else.
     """
     outputs = SugarRunner.list_outputs()
+    if not outputs:
+        return
 
     on_output = os.environ.get("SUGAR_RUNNER_OUTPUT", outputs[0])
     for output in outputs:
