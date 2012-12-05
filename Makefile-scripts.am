@@ -1,7 +1,7 @@
 bin_in_files = $(SCRIPTSDIR)/sugar-runner.in
-bin_SCRIPTS = $(bin_in_files:.in=)
+bin_SCRIPTS = sugar-runner
 
-$(SCRIPTSDIR)/sugar-runner: $(SCRIPTSDIR)/sugar-runner.in
+sugar-runner: $(SCRIPTSDIR)/sugar-runner.in
 	@sed -e "s|\@helpersdir\@|$(helpersdir)|" $< > $@
 
 helpersdir = $(libexecdir)/$(PACKAGE)
