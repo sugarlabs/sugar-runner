@@ -5,10 +5,25 @@ import os
 import subprocess
 import tempfile
 import time
+import signal
+import sys
 
 from gi.repository import SugarRunner
 
 helpers_dir="@helpersdir@"
+
+xinit_process = None
+window_process = None
+
+def _term_signal_handler(number, frame):
+    global window_process
+    global xinit_process
+
+    for process in xinit_process, window_process:
+        if process:
+            process.terminate()
+
+    sys.exit(0)
 
 def _get_screen_dpi():
     from gi.repository import Gtk
@@ -103,7 +118,6 @@ _setup_keyring()
 
 xinit_args = ["xinit", os.path.join(helpers_dir, "xinitrc"), "--"]
 display = SugarRunner.find_free_display()
-window_process = None
 
 if args.virtual:
     xinit_args.append("/usr/bin/Xvfb")
@@ -124,15 +138,17 @@ else:
     xinit_args.append(display)
     xinit_args.append("vt%s" % _get_tty_number())
 
+signal.signal(signal.SIGTERM, _term_signal_handler)
+
 try:
-    process = subprocess.Popen(xinit_args)
+    xinit_process = subprocess.Popen(xinit_args)
 
     result = None
     while result is None:
-        result = process.poll()
+        result = xinit_process.poll()
         time.sleep(0.1)
 except KeyboardInterrupt:
     pass
-
+aaaa
 if window_process:
     window_process.terminate()
