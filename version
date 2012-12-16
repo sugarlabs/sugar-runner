@@ -1,0 +1,12 @@
+#!/usr/bin/python
+
+import re
+import subprocess
+import sys
+
+description = subprocess.check_output(["git", "describe"])
+match = re.match(r"v([\d\.]+)", description)
+if match:
+    sys.stdout.write(match.groups()[0])
+else:
+    raise Exception("Unknown version. Please create an annotated tag.")

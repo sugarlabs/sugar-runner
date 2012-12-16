@@ -1,4 +1,4 @@
-AC_INIT([sugar-runner], [0.1], [dwnarvaez@gmail.com])
+AC_INIT([sugar-runner], m4_esyscmd([./version]), [dwnarvaez@gmail.com])
 AM_INIT_AUTOMAKE([foreign])
 AC_CONFIG_MACRO_DIR([m4])
 
