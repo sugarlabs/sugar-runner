@@ -14,4 +14,10 @@ depcomp
 install-sh
 missing
 m4
-scripts/sugar-runner
+.libs
+*.gir
+*.typelib
+*.la
+*.lo
+libtool
+sugar-runner
