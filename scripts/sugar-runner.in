@@ -10,10 +10,11 @@ import sys
 
 from gi.repository import SugarRunner
 
-helpers_dir="@helpersdir@"
+helpers_dir = "@helpersdir@"
 
 xinit_process = None
 window_process = None
+
 
 def _term_signal_handler(number, frame):
     global window_process
@@ -25,16 +26,19 @@ def _term_signal_handler(number, frame):
 
     sys.exit(0)
 
+
 def _get_screen_dpi():
     from gi.repository import Gtk
 
     settings = Gtk.Settings.get_default()
     return settings.get_property('gtk-xft-dpi') / 1024
 
+
 def _write_xkb_config():
     f, name = tempfile.mkstemp(prefix="sugar-xkbconfig-")
     subprocess.check_call(["setxkbmap", "-print"], stdout=f)
     os.environ["SUGAR_RUNNER_XKBCONFIG"] = name
+
 
 def _allow_to_run_x():
     with open("/etc/X11/Xwrapper.config") as f:
@@ -45,6 +49,7 @@ def _allow_to_run_x():
     tweak_wrapper = os.path.join(helpers_dir, "tweak-xwrapper")
     subprocess.check_call(["sudo", "-k", tweak_wrapper])
 
+
 def _run_xephyr_window(resolution):
     args = [os.path.join(helpers_dir, "xephyr-window")]
 
@@ -54,13 +59,15 @@ def _run_xephyr_window(resolution):
     process = subprocess.Popen(args, stdout=subprocess.PIPE)
     return process, process.stdout.readline().strip()
 
+
 def _get_tty_number():
     tty = subprocess.check_output(["tty"])
     head, tail = os.path.split(tty)
     return tail.strip().replace("tty", "")
 
+
 # Setup an unencrypted keyring so that it
-# doesn't bother us with password dialogs 
+# doesn't bother us with password dialogs
 def _setup_keyring(data_home_dir):
     keyrings_dir = os.path.join(data_home_dir, "keyrings")
     if not os.path.exists(keyrings_dir):
@@ -73,16 +80,18 @@ def _setup_keyring(data_home_dir):
             f.write("default")
 
         with open(os.path.join(keyrings_dir, "default.keyring"), "w") as f:
-            f.write("[keyring]\n" \
-                    "display-name=default\n" \
-                    "lock-on-idle=false\n" \
+            f.write("[keyring]\n"
+                    "display-name=default\n"
+                    "lock-on-idle=false\n"
                     "lock-timeout=0")
+
 
 def _ensure_dir(path):
     try:
         os.mkdir(path)
     except:
         pass
+
 
 def _get_home_dirs(args):
     base_home_dir = args.home_dir
@@ -100,6 +109,7 @@ def _get_home_dirs(args):
         _ensure_dir(path)
 
     return home_dirs
+
 
 def _setup_variables(args, home_dirs):
     to_unset = ["GPG_AGENT_INFO",
@@ -134,7 +144,7 @@ args = parser.parse_args()
 
 home_dirs = _get_home_dirs(args)
 _setup_variables(args, home_dirs)
-_setup_keyring(home_dirs["data"])    
+_setup_keyring(home_dirs["data"])
 
 xinit_args = ["xinit", os.path.join(helpers_dir, "xinitrc"), "--"]
 display = SugarRunner.find_free_display()
@@ -146,7 +156,7 @@ if args.virtual:
                        "-screen", "0", "1024x768x16"])
 elif "DISPLAY" in os.environ:
     _write_xkb_config()
-    
+
     window_process, xid = _run_xephyr_window(args.resolution)
 
     xinit_args.append("/usr/bin/Xephyr")

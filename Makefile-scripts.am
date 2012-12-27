@@ -9,5 +9,8 @@ dist_helpers_SCRIPTS = $(SCRIPTSDIR)/xinitrc \
                        $(SCRIPTSDIR)/tweak-xwrapper \
                        $(SCRIPTSDIR)/xephyr-window
 
+check:
+	pep8 $(dist_helpers_SCRIPTS) $(bin_in_files)
+
 CLEANFILES += $(bin_SCRIPTS)
 EXTRA_DIST += $(bin_in_files)

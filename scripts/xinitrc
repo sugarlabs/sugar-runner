@@ -9,6 +9,7 @@ from gi.repository import SugarRunner
 devnull = open("/dev/null")
 main_loop = None
 
+
 def _write_display(display_path):
     tmp_display_path = "%s.tmp" % display_path
 
@@ -16,6 +17,7 @@ def _write_display(display_path):
         f.write(os.environ["DISPLAY"])
 
     os.rename(tmp_display_path, display_path)
+
 
 def _setup_outputs():
     """Sugar doesn't handle multiple outputs properly. To avoid issues
@@ -31,16 +33,18 @@ def _setup_outputs():
         if output != on_output:
             subprocess.check_call(["xrandr", "--output", output, "--off"])
 
+
 def _load_xkb_config():
     if "SUGAR_RUNNER_XKBCONFIG" not in os.environ:
         return
 
     with open(os.environ["SUGAR_RUNNER_XKBCONFIG"]) as f:
         config = f.read()
- 
+
     process = subprocess.Popen(["xkbcomp", "-", os.environ["DISPLAY"]],
                                stdin=subprocess.PIPE, stdout=devnull)
     process.communicate(input=config)
+
 
 def _child_watch_cb(pid, condition):
     window_pid = os.environ.get("SUGAR_RUNNER_WINDOW_PID", None)
@@ -50,14 +54,17 @@ def _child_watch_cb(pid, condition):
     global main_loop
     main_loop.quit()
 
+
 def _add_output_to_environ(output):
     for line in output.strip().split("\n"):
         name, value = line.strip().split("=", 1)
         os.environ[name] = value
 
+
 def _start_dbus():
     output = subprocess.check_output(["dbus-launch", "--exit-with-session"])
     _add_output_to_environ(output)
+
 
 def _start_keyring():
     output = subprocess.check_output(["gnome-keyring-daemon",
