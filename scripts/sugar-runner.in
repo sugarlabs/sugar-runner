@@ -132,6 +132,9 @@ def _setup_variables(args, home_dirs):
     os.environ["XDG_DATA_HOME"] = home_dirs["data"]
     os.environ["XDG_CONFIG_HOME"] = home_dirs["config"]
 
+    # Disable Unity custom gtk scrollbars
+    os.environ["LIBOVERLAY_SCROLLBAR"] = "0"
+
 parser = argparse.ArgumentParser(description="Run sugar")
 parser.add_argument("--resolution", help="screen resolution")
 parser.add_argument("--output", help="name of the output")
