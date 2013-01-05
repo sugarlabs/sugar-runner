@@ -1,4 +1,4 @@
 * xvnc support
-* check unused imports
+* check unused imports with pylint
 * release 0.1
 * deprecate sugar-emulator
