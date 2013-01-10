@@ -3,20 +3,16 @@
 import os
 import subprocess
 import signal
+import sys
+import shlex
+import signal
 
 from gi.repository import SugarRunner
 
 devnull = open("/dev/null")
 main_loop = None
 
-
-def _write_display(display_path):
-    tmp_display_path = "%s.tmp" % display_path
-
-    with open(tmp_display_path, "w") as f:
-        f.write(os.environ["DISPLAY"])
-
-    os.rename(tmp_display_path, display_path)
+_SUGAR_ARGS = ["sugar"]
 
 
 def _setup_outputs():
@@ -72,12 +68,26 @@ def _start_keyring():
                                       "--components=secrets,pkcs11,ssh,gpg"])
     _add_output_to_environ(output)
 
-if "SUGAR_RUNNER_DISPLAY_PATH" in os.environ:
-    _write_display(os.environ["SUGAR_RUNNER_DISPLAY_PATH"])
+
+def _run_sugar():
+    subprocess.check_call(_SUGAR_ARGS)
+
+
+def _run_sugar_and_test(test_command):
+    sugar_process = subprocess.Popen(_SUGAR_ARGS)
+    result = subprocess.call(shlex.split(test_command))
+    sugar_process.terminate()
+
+    return result == 0
 
 _setup_outputs()
 _load_xkb_config()
 _start_dbus()
 _start_keyring()
 
-subprocess.check_call(["sugar"])
+test_command = os.environ.get("SUGAR_RUNNER_TEST_COMMAND", None)
+if test_command:
+    if not _run_sugar_and_test(test_command):
+        os.kill(int(os.environ["SUGAR_RUNNER_PID"]), signal.SIGUSR1)
+else:
+    _run_sugar()

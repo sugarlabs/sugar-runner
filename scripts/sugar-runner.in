@@ -14,6 +14,12 @@ helpers_dir = "@helpersdir@"
 
 xinit_process = None
 window_process = None
+result = 0
+
+
+def _usr1_signal_handler(number, frame):
+    global result
+    result = 1
 
 
 def _term_signal_handler(number, frame):
@@ -125,8 +131,11 @@ def _setup_variables(args, home_dirs):
     if args.output is not None:
         os.environ["SUGAR_RUNNER_OUTPUT"] = args.output
 
-    if args.display_path is not None:
-        os.environ["SUGAR_RUNNER_DISPLAY_PATH"] = args.display_path
+    if args.test_command is not None:
+        os.environ["SUGAR_RUNNER_TEST_COMMAND"] = args.test_command
+
+    if args.test_log is not None:
+        os.environ["SUGAR_RUNNER_TEST_LOG"] = args.test_log
 
     os.environ["XDG_CACHE_HOME"] = home_dirs["cache"]
     os.environ["XDG_DATA_HOME"] = home_dirs["data"]
@@ -139,10 +148,10 @@ parser = argparse.ArgumentParser(description="Run sugar")
 parser.add_argument("--resolution", help="screen resolution")
 parser.add_argument("--output", help="name of the output")
 parser.add_argument("--home-dir", help="path to the home directory")
+parser.add_argument("--test-log", help="path where to log the test output")
+parser.add_argument("--test-command", help="command line of the test to run")
 parser.add_argument("--virtual", action="store_true",
                     help="use an a virtual server")
-parser.add_argument("--display-path",
-                    help="write the display number at this path")
 args = parser.parse_args()
 
 home_dirs = _get_home_dirs(args)
@@ -171,7 +180,10 @@ else:
     xinit_args.append(display)
     xinit_args.append("vt%s" % _get_tty_number())
 
+os.environ["SUGAR_RUNNER_PID"] = str(os.getpid())
+
 signal.signal(signal.SIGTERM, _term_signal_handler)
+signal.signal(signal.SIGUSR1, _usr1_signal_handler)
 
 try:
     xinit_process = subprocess.Popen(xinit_args)
@@ -185,3 +197,5 @@ except KeyboardInterrupt:
 
 if window_process:
     window_process.terminate()
+
+sys.exit(result)
