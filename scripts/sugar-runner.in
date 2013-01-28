@@ -52,7 +52,7 @@ def _allow_to_run_x():
             if "allowed_users=anybody" in f.read():
                 return
     except IOError:
-	return
+        return
 
     print "We need to allow everybody to run the X server"
     tweak_wrapper = os.path.join(helpers_dir, "tweak-xwrapper")
