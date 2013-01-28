@@ -53,8 +53,9 @@ def _child_watch_cb(pid, condition):
 
 def _add_output_to_environ(output):
     for line in output.strip().split("\n"):
-        name, value = line.strip().split("=", 1)
-        os.environ[name] = value
+        splitted = line.strip().split("=", 1)
+        if len(splitted) == 2:
+            os.environ[splitted[0]] = splitted[1]
 
 
 def _start_dbus():
