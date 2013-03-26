@@ -81,7 +81,11 @@ def _run_sugar_and_test(test_command):
 
     return result == 0
 
+def _setup_xdg_user_dirs():
+    subprocess.check_call("xdg-user-dirs-update")
+
 _setup_outputs()
+_setup_xdg_user_dirs()
 _load_xkb_config()
 _start_dbus()
 _start_keyring()
