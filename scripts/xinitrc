@@ -9,7 +9,6 @@ import shlex
 from gi.repository import SugarRunner
 
 devnull = open("/dev/null")
-main_loop = None
 
 _SUGAR_ARGS = ["sugar"]
 
