@@ -5,7 +5,6 @@ import subprocess
 import signal
 import sys
 import shlex
-import signal
 
 from gi.repository import SugarRunner
 
@@ -85,6 +84,7 @@ def _run_sugar_and_test(test_command):
 def _setup_xdg_user_dirs():
     subprocess.check_call("xdg-user-dirs-update")
 
+
 _setup_outputs()
 _setup_xdg_user_dirs()
 _load_xkb_config()
@@ -97,3 +97,5 @@ if test_command:
         os.kill(int(os.environ["SUGAR_RUNNER_PID"]), signal.SIGUSR1)
 else:
     _run_sugar()
+
+os.kill(int(os.environ["GNOME_KEYRING_PID"]), signal.SIGTERM)
