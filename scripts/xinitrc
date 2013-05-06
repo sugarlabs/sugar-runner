@@ -41,15 +41,6 @@ def _load_xkb_config():
     process.communicate(input=config)
 
 
-def _child_watch_cb(pid, condition):
-    window_pid = os.environ.get("SUGAR_RUNNER_WINDOW_PID", None)
-    if window_pid:
-        os.kill(int(window_pid), signal.SIGTERM)
-
-    global main_loop
-    main_loop.quit()
-
-
 def _add_output_to_environ(output):
     for line in output.strip().split("\n"):
         splitted = line.strip().split("=", 1)
