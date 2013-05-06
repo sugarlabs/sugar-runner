@@ -53,12 +53,6 @@ sugar_runner_window_wait(void)
                          DisplayHeight(display, 0) == configure_event.height);
     }
 
-    if (event.type == ClientMessage &&
-        event.xclient.data.l[0] == wm_delete_window) {
-        XCloseDisplay(display);
-        return FALSE;
-    }
-
     return TRUE;
 }
 

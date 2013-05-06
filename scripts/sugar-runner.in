@@ -12,7 +12,6 @@ from gi.repository import SugarRunner
 
 helpers_dir = "@helpersdir@"
 
-xinit_process = None
 window_process = None
 result = 0
 
@@ -22,15 +21,8 @@ def _usr1_signal_handler(number, frame):
     result = 1
 
 
-def _term_signal_handler(number, frame):
-    global window_process
-    global xinit_process
-
-    for process in xinit_process, window_process:
-        if process:
-            process.terminate()
-
-    sys.exit(0)
+def _setpgrp_preexec():
+    os.setpgrp()
 
 
 def _get_screen_dpi():
@@ -147,6 +139,9 @@ def _setup_variables(args, home_dirs):
     # Disable Unity custom gtk scrollbars
     os.environ["LIBOVERLAY_SCROLLBAR"] = "0"
 
+    # Allow to close with Shift+Alt+Q
+    os.environ["SUGAR_EMULATOR"] = "yes"
+
 parser = argparse.ArgumentParser(description="Run sugar")
 parser.add_argument("--resolution", help="screen resolution")
 parser.add_argument("--output", help="name of the output")
@@ -185,11 +180,10 @@ else:
 
 os.environ["SUGAR_RUNNER_PID"] = str(os.getpid())
 
-signal.signal(signal.SIGTERM, _term_signal_handler)
 signal.signal(signal.SIGUSR1, _usr1_signal_handler)
 
 try:
-    xinit_process = subprocess.Popen(xinit_args)
+    xinit_process = subprocess.Popen(xinit_args, preexec_fn=_setpgrp_preexec)
 
     result = None
     while result is None:
