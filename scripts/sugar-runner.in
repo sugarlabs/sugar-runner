@@ -139,9 +139,6 @@ def _setup_variables(args, home_dirs):
     # Disable Unity custom gtk scrollbars
     os.environ["LIBOVERLAY_SCROLLBAR"] = "0"
 
-    # Allow to close with Shift+Alt+Q
-    os.environ["SUGAR_EMULATOR"] = "yes"
-
 parser = argparse.ArgumentParser(description="Run sugar")
 parser.add_argument("--resolution", help="screen resolution")
 parser.add_argument("--output", help="name of the output")
