@@ -12,6 +12,7 @@ void
 sugar_runner_window_create(int width, int height, gboolean fullscreen)
 {
     Window root_window;
+    const char *title = "Sugar Runner";
 
     if (display == NULL) {
         display = XOpenDisplay(NULL);
@@ -33,6 +34,11 @@ sugar_runner_window_create(int width, int height, gboolean fullscreen)
                         XA_ATOM, 32, PropModeReplace,
                         (unsigned char *)&atom, 1);
     }
+
+    XChangeProperty (display, window,
+		     XInternAtom(display, "_NET_WM_NAME", True),
+		     XInternAtom(display, "UTF8_STRING", True), 8,
+		     PropModeReplace, (unsigned char *)title, strlen(title));
 
     XMapWindow(display, window);
 
