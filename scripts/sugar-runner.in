@@ -129,9 +129,6 @@ def _setup_variables(args, home_dirs):
     if args.test_command is not None:
         os.environ["SUGAR_RUNNER_TEST_COMMAND"] = args.test_command
 
-    if args.test_log is not None:
-        os.environ["SUGAR_RUNNER_TEST_LOG"] = args.test_log
-
     os.environ["XDG_CACHE_HOME"] = home_dirs["cache"]
     os.environ["XDG_DATA_HOME"] = home_dirs["data"]
     os.environ["XDG_CONFIG_HOME"] = home_dirs["config"]
@@ -143,7 +140,6 @@ parser = argparse.ArgumentParser(description="Run sugar")
 parser.add_argument("--resolution", help="screen resolution")
 parser.add_argument("--output", help="name of the output")
 parser.add_argument("--home-dir", help="path to the home directory")
-parser.add_argument("--test-log", help="path where to log the test output")
 parser.add_argument("--test-command", help="command line of the test to run")
 parser.add_argument("--virtual", action="store_true",
                     help="use an a virtual server")
