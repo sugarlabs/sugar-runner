@@ -10,8 +10,6 @@ from gi.repository import SugarRunner
 
 devnull = open("/dev/null")
 
-_SUGAR_ARGS = ["sugar"]
-
 
 def _setup_outputs():
     """Sugar doesn't handle multiple outputs properly. To avoid issues
@@ -59,18 +57,6 @@ def _start_keyring():
     _add_output_to_environ(output)
 
 
-def _run_sugar():
-    subprocess.check_call(_SUGAR_ARGS)
-
-
-def _run_sugar_and_test(test_command):
-    sugar_process = subprocess.Popen(_SUGAR_ARGS)
-    result = subprocess.call(shlex.split(test_command))
-    sugar_process.terminate()
-
-    return result == 0
-
-
 def _setup_xdg_user_dirs():
     subprocess.check_call("xdg-user-dirs-update")
 
@@ -81,11 +67,7 @@ _load_xkb_config()
 _start_dbus()
 _start_keyring()
 
-test_command = os.environ.get("SUGAR_RUNNER_TEST_COMMAND", None)
-if test_command:
-    if not _run_sugar_and_test(test_command):
-        os.kill(int(os.environ["SUGAR_RUNNER_PID"]), signal.SIGUSR1)
-else:
-    _run_sugar()
+if subprocess.call(["sugar"]) != 0:
+    os.kill(int(os.environ["SUGAR_RUNNER_PID"]), signal.SIGUSR1)
 
 os.kill(int(os.environ["GNOME_KEYRING_PID"]), signal.SIGTERM)
