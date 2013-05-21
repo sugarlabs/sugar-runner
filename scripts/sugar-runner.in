@@ -137,8 +137,6 @@ parser = argparse.ArgumentParser(description="Run sugar")
 parser.add_argument("--resolution", help="screen resolution")
 parser.add_argument("--output", help="name of the output")
 parser.add_argument("--home-dir", help="path to the home directory")
-parser.add_argument("--virtual", action="store_true",
-                    help="use an a virtual server")
 args = parser.parse_args()
 
 home_dirs = _get_home_dirs(args)
@@ -148,7 +146,7 @@ _setup_keyring(home_dirs["data"])
 xinit_args = ["xinit", os.path.join(helpers_dir, "xinitrc"), "--"]
 display = SugarRunner.find_free_display()
 
-if args.virtual:
+if "SUGAR_RUNNER_VIRTUAL" in os.environ:
     xinit_args.append("/usr/bin/Xvfb")
     xinit_args.append(display)
     xinit_args.extend(["-ac", "-noreset", "-shmem",
