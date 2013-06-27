@@ -7,6 +7,13 @@ import sys
 description = subprocess.check_output(["git", "describe"])
 match = re.match(r"v([\d\.]+)", description)
 if match:
-    sys.stdout.write(match.groups()[0])
+    version = match.groups()[0]
+
+    if version != description:
+        commit_id = subprocess.check_output(["git", "rev-parse", "--short",
+                                             "HEAD"])
+        version = "%sgit%s" % (version, commit_id)
+
+    sys.stdout.write(version)
 else:
     raise Exception("Unknown version. Please create an annotated tag.")
