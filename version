@@ -10,9 +10,7 @@ if match:
     version = match.groups()[0]
 
     if version != description[1:]:
-        commit_id = subprocess.check_output(["git", "rev-parse", "--short",
-                                             "HEAD"])
-        version = "%sgit%s" % (version, commit_id)
+        version = version + "git"
 
     sys.stdout.write(version)
 else:
