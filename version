@@ -4,12 +4,12 @@ import re
 import subprocess
 import sys
 
-description = subprocess.check_output(["git", "describe"])
+description = subprocess.check_output(["git", "describe"]).strip()
 match = re.match(r"v([\d\.]+)", description)
 if match:
     version = match.groups()[0]
 
-    if version != description:
+    if version != description[1:]:
         commit_id = subprocess.check_output(["git", "rev-parse", "--short",
                                              "HEAD"])
         version = "%sgit%s" % (version, commit_id)
