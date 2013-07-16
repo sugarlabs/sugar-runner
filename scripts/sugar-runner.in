@@ -112,7 +112,7 @@ def _ensure_dir(path):
 
 
 def _get_home_dirs(args):
-    base_home_dir = args.home_dir
+    base_home_dir = os.environ.get("SUGAR_RUNNER_HOME_DIR", None)
     if base_home_dir is None:
         base_home_dir = os.path.expanduser("~/.sugar-runner")
 
@@ -153,7 +153,6 @@ def _setup_variables(args, home_dirs):
 parser = argparse.ArgumentParser(description="Run sugar")
 parser.add_argument("--resolution", help="screen resolution")
 parser.add_argument("--output", help="name of the output")
-parser.add_argument("--home-dir", help="path to the home directory")
 args = parser.parse_args()
 
 home_dirs = _get_home_dirs(args)
