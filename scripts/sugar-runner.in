@@ -86,8 +86,8 @@ def _get_tty_number():
 
 # Setup an unencrypted keyring so that it
 # doesn't bother us with password dialogs
-def _setup_keyring(data_home_dir):
-    keyrings_dir = os.path.join(data_home_dir, "keyrings")
+def _setup_keyring():
+    keyrings_dir = os.path.join(os.environ["XDG_DATA_HOME"], "keyrings")
     if not os.path.exists(keyrings_dir):
         try:
             os.makedirs(keyrings_dir)
@@ -106,30 +106,12 @@ def _setup_keyring(data_home_dir):
 
 def _ensure_dir(path):
     try:
-        os.mkdir(path)
-    except:
+        os.makedirs(path)
+    except OSError:
         pass
 
 
-def _get_home_dirs(args):
-    base_home_dir = os.environ.get("SUGAR_RUNNER_HOME_DIR", None)
-    if base_home_dir is None:
-        base_home_dir = os.path.expanduser("~/.sugar-runner")
-
-    _ensure_dir(base_home_dir)
-
-    home_dirs = {}
-
-    for home_name in ["cache", "config", "data"]:
-        home_dirs[home_name] = os.path.join(base_home_dir, home_name)
-
-    for path in home_dirs.values():
-        _ensure_dir(path)
-
-    return home_dirs
-
-
-def _setup_variables(args, home_dirs):
+def _setup_variables(args):
     to_unset = ["GPG_AGENT_INFO",
                 "SSH_AUTH_SOCK",
                 "GNOME_KEYRING_CONTROL",
@@ -143,9 +125,22 @@ def _setup_variables(args, home_dirs):
     if args.output is not None:
         os.environ["SUGAR_RUNNER_OUTPUT"] = args.output
 
-    os.environ["XDG_CACHE_HOME"] = home_dirs["cache"]
-    os.environ["XDG_DATA_HOME"] = home_dirs["data"]
-    os.environ["XDG_CONFIG_HOME"] = home_dirs["config"]
+    base_home_dir = os.path.expanduser("~/.sugar-runner")
+
+    if "XDG_CACHE_HOME" not in os.environ:
+        cache_home = os.path.join(base_home_dir, "cache")
+        os.environ["XDG_CACHE_HOME"] = cache_home
+        _ensure_dir(cache_home)
+
+    if "XDG_CONFIG_HOME" not in os.environ:
+        config_home = os.path.join(base_home_dir, "config")
+        os.environ["XDG_CONFIG_HOME"] = config_home
+        _ensure_dir(config_home)
+
+    if "XDG_DATA_HOME" not in os.environ:
+        data_home = os.path.join(base_home_dir, "data")
+        os.environ["XDG_DATA_HOME"] = data_home
+        _ensure_dir(data_home)
 
     # Disable Unity custom gtk scrollbars
     os.environ["LIBOVERLAY_SCROLLBAR"] = "0"
@@ -155,9 +150,8 @@ parser.add_argument("--resolution", help="screen resolution")
 parser.add_argument("--output", help="name of the output")
 args = parser.parse_args()
 
-home_dirs = _get_home_dirs(args)
-_setup_variables(args, home_dirs)
-_setup_keyring(home_dirs["data"])
+_setup_variables(args)
+_setup_keyring()
 
 xinit_args = ["xinit", os.path.join(helpers_dir, "xinitrc"), "--"]
 display = SugarRunner.find_free_display()
