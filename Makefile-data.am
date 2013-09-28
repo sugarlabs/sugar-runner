@@ -1,7 +1,4 @@
 applicationsdir = $(datadir)/applications
 applications_DATA = $(DATASRCDIR)/sugar-runner.desktop
 
-icondir = $(datadir)/icons/hicolor/scalable/apps
-icon_DATA = $(DATASRCDIR)/sugar-xo.svg
-
-EXTRA_DIST += $(applications_DATA) $(icon_DATA)
+EXTRA_DIST += $(applications_DATA)
