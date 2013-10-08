@@ -3,4 +3,4 @@ Type=Application
 Name=Sugar
 Exec=sugar-runner
 Icon=sugar-xo
-Categories=Education;Teaching;
+Categories=Education;X-Teaching;
