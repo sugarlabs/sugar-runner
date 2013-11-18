@@ -142,6 +142,10 @@ def _setup_variables(args):
         os.environ["XDG_DATA_HOME"] = data_home
         _ensure_dir(data_home)
 
+    os.environ["SUGAR_SHOW_RESTART"] = "no"
+    os.environ["SUGAR_SHOW_SHUTDOWN"] = "no"
+    os.environ["SUGAR_SHOW_LOGOUT"] = "yes"
+
     # Disable Unity custom gtk scrollbars
     os.environ["LIBOVERLAY_SCROLLBAR"] = "0"
 
