@@ -1,3 +1,5 @@
+# About
+
 sugar-runner allows to run sugar without using a display manager as usually
 required by X desktops. You can run it either from a text console
 or from inside another X session. By default it runs fullscreen but when inside
