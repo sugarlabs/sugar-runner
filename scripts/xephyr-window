@@ -22,7 +22,7 @@ from gi.repository import SugarRunner
 
 xid_printed = False
 
-parser = argparse.ArgumentParser(description="A window to host Xephyr")
+parser = argparse.ArgumentParser(description="A window for Xephyr")
 parser.add_argument("--resolution", help="screen resolution")
 args = parser.parse_args()
 
