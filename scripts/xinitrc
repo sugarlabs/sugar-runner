@@ -29,7 +29,7 @@ devnull = open("/dev/null")
 
 def _setup_outputs():
     """Sugar doesn't handle multiple outputs properly. To avoid issues
-       we keep the first output in the list returned by xrandr and turn
+       we use the first output in the list returned by xrandr and turn
        off everything else.
     """
     outputs = SugarRunner.list_outputs()
