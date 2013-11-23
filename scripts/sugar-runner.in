@@ -84,8 +84,7 @@ def _get_tty_number():
     return tail.strip().replace("tty", "")
 
 
-# Setup an unencrypted keyring so that it
-# doesn't bother us with password dialogs
+# Setup an unencrypted keyring to avoid password dialogs
 def _setup_keyring():
     keyrings_dir = os.path.join(os.environ["XDG_DATA_HOME"], "keyrings")
     if not os.path.exists(keyrings_dir):
