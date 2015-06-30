@@ -1,4 +1,4 @@
-AC_INIT([sugar-runner],[0.105.2],[dwnarvaez@gmail.com])
+AC_INIT([sugar-runner],[0.105.3],[dwnarvaez@gmail.com])
 AM_INIT_AUTOMAKE([foreign dist-xz no-dist-gzip])
 AC_CONFIG_MACRO_DIR([m4])
 
