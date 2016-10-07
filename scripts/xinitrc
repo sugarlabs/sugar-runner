@@ -86,4 +86,5 @@ _start_keyring()
 if subprocess.call(["sugar"]) != 0:
     os.kill(int(os.environ["SUGAR_RUNNER_PID"]), signal.SIGUSR1)
 
-os.kill(int(os.environ["GNOME_KEYRING_PID"]), signal.SIGTERM)
+if 'GNOME_KEYRING_PID' in os.environ:
+    os.kill(int(os.environ["GNOME_KEYRING_PID"]), signal.SIGTERM)
