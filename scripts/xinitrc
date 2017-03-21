@@ -22,6 +22,8 @@ import signal
 import sys
 import shlex
 
+import gi
+gi.require_version('SugarRunner', '1.0')
 from gi.repository import SugarRunner
 
 devnull = open("/dev/null")

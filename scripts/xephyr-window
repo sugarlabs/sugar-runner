@@ -18,6 +18,8 @@
 
 import argparse
 
+import gi
+gi.require_version('SugarRunner', '1.0')
 from gi.repository import SugarRunner
 
 xid_printed = False
