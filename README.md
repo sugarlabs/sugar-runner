@@ -20,3 +20,27 @@ Sugar Runner should not be used by testers, as the testing will miss critical as
 * substitutes an alternate home directory for XDG data,
 * turns off the Sugar shutdown and restart options,
 * forks Xvfb with Xephyr.
+
+# How To Build And Test
+
+./autogen.sh
+
+make
+
+sudo make install
+
+## You will need to install Xephyr:
+
+sudo dnf install Xephyr
+
+## Set up some environment variables:
+
+export GI_TYPELIB_PATH=/usr/local/lib/girepository-1.0
+
+export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+
+## Then run:
+
+sugar-runner
+
+At this time all that will happen is Xephyr tries to open and fails.
