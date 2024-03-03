@@ -1,5 +1,4 @@
-#!/usr/bin/python2 -u
-
+#!/usr/bin/python3 -u
 # Copyright (C) 2013, Daniel Narvaez
 #
 # This program is free software; you can redistribute it and/or modify
@@ -60,13 +59,13 @@ def _write_xkb_config():
 
 def _allow_to_run_x():
     try:
-        with open("/etc/X11/Xwrapper.config") as f:
+        with open("/etc/X11/Xwrapper.config", 'rb') as f:
             if "allowed_users=anybody" in f.read():
                 return
     except IOError:
         return
 
-    print "We need to allow everybody to run the X server"
+    print("We need to allow everybody to run the X server")
     tweak_wrapper = os.path.join(helpers_dir, "tweak-xwrapper")
     subprocess.check_call(["sudo", "-k", tweak_wrapper])
 
@@ -96,10 +95,10 @@ def _setup_keyring():
         except OSError:
             pass
 
-        with open(os.path.join(keyrings_dir, "default"), "w") as f:
+        with open(os.path.join(keyrings_dir, "default"), "wb") as f:
             f.write("default")
 
-        with open(os.path.join(keyrings_dir, "default.keyring"), "w") as f:
+        with open(os.path.join(keyrings_dir, "default.keyring"), "wb") as f:
             f.write("[keyring]\n"
                     "display-name=default\n"
                     "lock-on-idle=false\n"

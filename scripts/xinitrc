@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/python3
 
 # Copyright (C) 2013, Daniel Narvaez
 #
@@ -48,7 +48,7 @@ def _load_xkb_config():
     if "SUGAR_RUNNER_XKBCONFIG" not in os.environ:
         return
 
-    with open(os.environ["SUGAR_RUNNER_XKBCONFIG"]) as f:
+    with open(os.environ["SUGAR_RUNNER_XKBCONFIG"], 'rb') as f:
         config = f.read()
 
     process = subprocess.Popen(["xkbcomp", "-", os.environ["DISPLAY"]],
@@ -65,14 +65,14 @@ def _add_output_to_environ(output):
 
 def _start_dbus():
     output = subprocess.check_output(["dbus-launch", "--exit-with-session"])
-    _add_output_to_environ(output)
+    _add_output_to_environ(output.decode())
 
 
 def _start_keyring():
     output = subprocess.check_output(["gnome-keyring-daemon",
                                       "--start", "-d",
                                       "--components=secrets,pkcs11,ssh,gpg"])
-    _add_output_to_environ(output)
+    _add_output_to_environ(output.decode())
 
 
 def _setup_xdg_user_dirs():

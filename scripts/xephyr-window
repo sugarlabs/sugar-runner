@@ -1,4 +1,4 @@
-#!/usr/bin/python2 -u
+#!/usr/bin/python3 -u
 
 # Copyright (C) 2013, Daniel Narvaez
 #
@@ -40,5 +40,5 @@ SugarRunner.window_create(int(width), int(height), fullscreen)
 while SugarRunner.window_wait():
     if not fullscreen or SugarRunner.window_is_fullscreen():
         if not xid_printed:
-            print SugarRunner.window_get_xid()
+            print (SugarRunner.window_get_xid())
             xid_printed = True

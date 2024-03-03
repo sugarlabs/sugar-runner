@@ -1,4 +1,4 @@
-#!/usr/bin/python2 -u
+#!/usr/bin/python3 -u
 
 # Copyright (C) 2013, Daniel Narvaez
 #
@@ -18,11 +18,11 @@
 
 config_path = "/etc/X11/Xwrapper.config"
 
-with open(config_path) as f:
+with open(config_path, 'rb') as f:
     new_config = [line for line in f.readlines()
                   if "allowed_users" not in line]
 
 new_config.append("allowed_users=anybody\n")
 
-with open(config_path, "w") as f:
+with open(config_path, "wb") as f:
     f.write("".join(new_config))

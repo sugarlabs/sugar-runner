@@ -21,3 +21,4 @@ m4
 *.lo
 libtool
 sugar-runner
+/compile
