@@ -14,6 +14,10 @@ Sugar Runner should not be used with naive learners, as they may escape from Sug
 
 Sugar Runner should not be used by testers, as the testing will miss critical aspects of the session interaction, such as shutdown and restart.
 
+At this time sugar-runner *only* works with Xorg, NOT Wayland. In Fedora there is a gear symbol on the login page 
+which lets you choose to run GNOME or GNOME Classic on Xorg. If you choose one of these options before logging in
+sugar-runner should work for you.
+
 # How It Works
 
 * unsets variables inherited from the existing session,
@@ -31,6 +35,8 @@ sudo make install
 
 ## You will need to install Xephyr:
 
+in Fedora:
+
 sudo dnf install Xephyr
 
 ## Set up some environment variables:
@@ -42,5 +48,3 @@ export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
 ## Then run:
 
 sugar-runner
-
-At this time all that will happen is Xephyr tries to open and fails.
