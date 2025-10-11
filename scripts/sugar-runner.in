@@ -95,10 +95,10 @@ def _setup_keyring():
         except OSError:
             pass
 
-        with open(os.path.join(keyrings_dir, "default"), "wb") as f:
+        with open(os.path.join(keyrings_dir, "default"), "w") as f:
             f.write("default")
 
-        with open(os.path.join(keyrings_dir, "default.keyring"), "wb") as f:
+        with open(os.path.join(keyrings_dir, "default.keyring"), "w") as f:
             f.write("[keyring]\n"
                     "display-name=default\n"
                     "lock-on-idle=false\n"
